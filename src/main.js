@@ -100,6 +100,7 @@ $(document).ready(function() {
               //console.log(data);
               $.jStorage.set('binary_chart_template_store', data);
               saveBtt.toggleClass('process');
+              $.growl.notice({ message: "Settting saved successfully!" });
             });
           });
         })
