@@ -23,6 +23,7 @@ $(document).ready(function() {
   if (isAffiliates) {
     disabledFeatures.push('header_fullscreen_button');
   }
+  disabledFeatures.push('chart_property_page_timezone_sessions');
 
   if (interval) interval = interval.toUpperCase();
   //Convert our  period string to TradingView format
