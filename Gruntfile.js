@@ -15,6 +15,7 @@ module.exports = function (grunt) {
 	grunt.loadNpmTasks('grunt-contrib-uglify');
 	grunt.loadNpmTasks('grunt-contrib-cssmin');
     grunt.loadNpmTasks('grunt-contrib-htmlmin');
+    grunt.loadNpmTasks('grunt-firefox-manifest');
 
 	grunt.initConfig({
 	    pkg: grunt.file.readJSON('package.json'),
@@ -56,6 +57,17 @@ module.exports = function (grunt) {
 				replacements: [{
 					from: 'v1.0.0',
 					to: 'v<%=pkg.version%>'
+				}]
+			}, 
+			firefoxManifestVersion : {
+				src: ['dist/manifest.webapp'],
+				overwrite: true,
+				replacements: [{
+					from: '<version>',
+					to: 'v<%=pkg.version%>'
+				}, {
+					from: '<%=pkg.name%>',
+					to: "<%=pkg.name.replace(/_/g, ' ')%>"
 				}]
 			}
 		},
@@ -165,10 +177,17 @@ module.exports = function (grunt) {
               interrupt : true
 		    },
 		  },
+		},
+		firefoxManifest: {
+			options: {
+				packageJson: 'package.json',
+			  	manifest: 'dist/manifest.webapp'
+			},
+			target: {}
 		}
 	});	
 
 	grunt.registerTask('core-tasks', ['clean:dist', 'copy:main', 'clean:todo', 'rename', 'replace', 'concat', 'clean:dist_udf']);
-	grunt.registerTask('default', ['core-tasks', 'removelogging', 'uglify', 'htmlmin', 'cssmin']);
+	grunt.registerTask('default', ['core-tasks', 'removelogging', 'uglify', 'htmlmin', 'cssmin', 'firefoxManifest', 'replace:firefoxManifestVersion']);
 
 };

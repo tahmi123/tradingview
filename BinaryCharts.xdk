@@ -6,7 +6,7 @@
       "projectTypeName": "com.intel.xdk.projecttype.jsapp",
       "src": "",
       "projectGuid": "adba6750-b473-4a60-a462-a0de2e08854d",
-      "lastModifiedDate": 1438176597222,
+      "lastModifiedDate": 1444004028130,
       "creationDate": 1437229996672
     },
     "sourceDirectory": "dist",
@@ -322,7 +322,7 @@
         "runtime_": "W3C",
         "name_": "WebApp",
         "preferences_": {},
-        "isActive_": false,
+        "isActive_": true,
         "appName_": "BinaryCharts",
         "appID_": "not.yet.specified",
         "appAccess_": [
@@ -360,7 +360,7 @@
         "runtime_": "W3C on Chrome OS",
         "name_": "Chrome",
         "preferences_": {},
-        "isActive_": false,
+        "isActive_": true,
         "appName_": "BinaryCharts",
         "appID_": "not.yet.specified",
         "appAccess_": [
