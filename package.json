@@ -47,6 +47,6 @@
       "128": "<version>/browser_app_assets/binary-128x128px.png",
       "16": "<version>/browser_app_assets/binary-16x16px.png"
     },
-    "launch_path": "index.html"
+    "launch_path": "/index.html"
   }
 }
