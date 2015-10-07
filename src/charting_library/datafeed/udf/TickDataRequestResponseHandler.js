@@ -65,18 +65,21 @@ TickDataRequestResponseHandler.prototype.subscribeBars = function(symbolInfo, on
   this.feedHandler._webSocketConnection.send(JSON.stringify(
                                                     {
                                                       "ticks": symbolInfo.ticker,
-                                                      "tradingview_ticker_id": symbolInfo.ticker + TradingView.actualResolution
+                                                      "passthrough": {
+                                                        "tradingview_ticker_id": symbolInfo.ticker + TradingView.actualResolution
+                                                      }
                                                     }));
 
   //Subscribe to new bars - The first timeOut call is based on time difference between when we executed this and the next bar time
   //That difference might not be same as totalSecondsInABar since we don't know when the user opened the chart
   var lastBar = this._barsTable.chain().find({barsKeyTableID : tableRow.barsKeyTableID}).simplesort('time', true).limit(1).data()[0];
+  console.log('Last bar time unknown to us now : ', lastBar.time);
   var suffixAndIntVal = this.feedHandler._ohlcRequestResponseHandler.parseSuffixAndIntValue(),
       totalSecondsInABar = this.feedHandler._ohlcRequestResponseHandler.totalSecondsInABar(suffixAndIntVal.suffix, suffixAndIntVal.intVal),
-      nextBarDateInLocal = new Date(lastBar.time + totalSecondsInABar * 1000);
-  var dateNow = new Date();
+      nextBarDateInLocal = lastBar.time + totalSecondsInABar * 1000;
+  var dateNow = moment.utc().valueOf();
   var that = this;
-  console.log('seconds after which setTimeout will be called : ', Math.ceil((nextBarDateInLocal.getTime() - dateNow.getTime()) / 1000));
+  console.log('seconds after which setTimeout will be called : ', Math.ceil((nextBarDateInLocal - dateNow) / 1000));
   console.log('seconds after which setInterval will be called : ', totalSecondsInABar);
 
   tableRow.timerHandler = setTimeout(function() {
@@ -88,7 +91,7 @@ TickDataRequestResponseHandler.prototype.subscribeBars = function(symbolInfo, on
         lastBar = lastBar[0];
         console.log('LastBar : ', lastBar);
         //requests new bars
-        that.feedHandler._ohlcRequestResponseHandler.getBars(symbolInfo, lastBar.time/1000, new Date().getTime() / 1000 + totalSecondsInABar, onRealtimeCallback);
+        that.feedHandler._ohlcRequestResponseHandler.getBars(symbolInfo, lastBar.time/1000, moment().utc().valueOf() / 1000 + totalSecondsInABar, onRealtimeCallback, null, true);
       }
     };
 
@@ -101,7 +104,7 @@ TickDataRequestResponseHandler.prototype.subscribeBars = function(symbolInfo, on
     requestBarUpdates();
     that._barsKeyTable.update(tableRow);
 
-  }, Math.ceil(nextBarDateInLocal.getTime() - dateNow.getTime()) + 1000);//Trigger scheduled time + 1s later. Hitting server before 1s is too early to get current bar
+  }, Math.ceil(nextBarDateInLocal - dateNow) + 1000);//Trigger scheduled time + 1s later. Hitting server before 1s is too early to get current bar
   this._barsKeyTable.update(tableRow);
 
 };
@@ -152,7 +155,9 @@ TickDataRequestResponseHandler.prototype.reSubscribeToTicks = function() {
         this.feedHandler._webSocketConnection.send(JSON.stringify(
                                                           {
                                                             "ticks": ticker,
-                                                            "tradingview_ticker_id": tableRow.key
+                                                            "passthrough": {
+                                                              "tradingview_ticker_id": tableRow.key
+                                                            }
                                                           }));
       }
     }

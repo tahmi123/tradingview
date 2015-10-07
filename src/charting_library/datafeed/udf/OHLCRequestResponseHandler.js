@@ -128,7 +128,7 @@ OHLCRequestResponseHandler.prototype.totalSecondsInABar = function(suffix, intVa
   return totalSecondsInABar;
 };
 
-OHLCRequestResponseHandler.prototype.getBars = function(symbolInfo, rangeStartDate, rangeEndDate, onDataCallback, onErrorCallback) {
+OHLCRequestResponseHandler.prototype.getBars = function(symbolInfo, rangeStartDate, rangeEndDate, onDataCallback, onErrorCallback, ignoreEndDate) {
 
 	var that = this;
 
@@ -137,11 +137,6 @@ OHLCRequestResponseHandler.prototype.getBars = function(symbolInfo, rangeStartDa
 		throw "Got a JS time instead of Unix one.";
 	}
 
-	//Date in GMT
-	// var startDateInGMT = new Date(rangeStartDate * 1000);
-	// startDateInGMT.setUTCMinutes(0);
-	// startDateInGMT.setUTCSeconds(0);
-	// startDateInGMT.setUTCHours(12);
   var tableRow = this._barsKeyTable.findObject({'key' : symbolInfo.ticker + TradingView.actualResolution}) || {},
       tableID = tableRow.barsKeyTableID || -1;
   if (tableID == -1) {
@@ -166,6 +161,7 @@ OHLCRequestResponseHandler.prototype.getBars = function(symbolInfo, rangeStartDa
       count = requestParameters.count,
       totalSecondsInABar = requestParameters.totalSecondsInABar;
 
+  var dataExists = false;
   if (this._barsTable.findObject({'barsKeyTableID' : tableID})) {//Check if data exists
     var firstBar = this._barsTable.chain().find({'barsKeyTableID' : tableID}).simplesort('time', false).limit(1).data()[0],
         timeOfFirstBar = firstBar.time / 1000;
@@ -177,7 +173,7 @@ OHLCRequestResponseHandler.prototype.getBars = function(symbolInfo, rangeStartDa
       console.log('Modfied end time!');
       rangeEndDate = timeOfFirstBar;
     }
-
+    dataExists = true;
   }
 
   //We cannot request more than 500 candles at a time
@@ -186,18 +182,19 @@ OHLCRequestResponseHandler.prototype.getBars = function(symbolInfo, rangeStartDa
   }
   
   //We cannot request more than 3 years old data
-  var maxDateBackFromNow_seconds = Math.floor(new Date().getTime()/1000 - 3 * 365 * 24 * 60 * 60);
+  var maxDateBackFromNow_seconds = Math.floor(moment.utc().valueOf() / 1000 - 3 * 365 * 24 * 60 * 60);
   if (rangeStartDate < maxDateBackFromNow_seconds) {
 	  rangeStartDate = maxDateBackFromNow_seconds;
   }
 
   rangeEndDate += totalSecondsInABar;
   console.log('Request date range : ' , new Date(rangeStartDate * 1000), new Date(rangeEndDate * 1000),
-                'Total Seconds in a bar : ', totalSecondsInABar);
+                'Total Seconds in a bar : ', totalSecondsInABar,
+                'Ignore End Date : ', ignoreEndDate);
   var requestObject = {
     "ticks": symbolInfo.ticker,
-    "start": rangeStartDate,
-    "end": rangeEndDate, 
+    "start": Math.floor(rangeStartDate),
+    "end": ignoreEndDate || !dataExists ? 'latest' : Math.ceil(rangeEndDate), 
     //"count": count,
     "granularity":  suffix + intVal,
     "adjust_start_time": 1

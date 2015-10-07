@@ -92,9 +92,9 @@ FeedHandler.prototype.init = function() {
           $(document).trigger("chart-status-picture-change", ["delayed-feed"]);
           that._lastTickTime = null;
         } else {
-          if (data.echo_req.tradingview_ticker_id) {
+          if (data.echo_req.passthrough && data.echo_req.passthrough.tradingview_ticker_id) {
             var tradingview_ticker_id = TradingView.currentlyDisplayedSymbol + TradingView.actualResolution;
-            if (tradingview_ticker_id == data.echo_req.tradingview_ticker_id) {
+            if (tradingview_ticker_id == data.echo_req.passthrough.tradingview_ticker_id) {
               that._lastTickTime = Date.now();
               $(document).trigger("chart-status-picture-change", ["realtime-feed"]);
               that._tickDataRequestResponseHandler.process( data );

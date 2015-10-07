@@ -40,7 +40,32 @@ module.exports = function (grunt) {
 		copy: {
 			main: {
 				files: [
-					{expand: true, cwd: 'src/', src: ['**'], dest: 'dist/v<%=pkg.version%>'}
+					{
+						expand: true, 
+						cwd: 'src/', 
+						src: ['**'], 
+						dest: 'dist/v<%=pkg.version%>'
+					}
+				]
+			},
+			copyLibraries: {
+				files: [
+					{
+						nonull: true,
+						expand: true, 
+						flatten: true, 
+						cwd: 'node_modules/', 
+						src: [
+							'jstorage/jstorage.min.js', 
+							'ReconnectingWebSocket/reconnecting-websocket.min.js',
+							'lokijs/build/lokijs.min.js',
+							'jquery.growl/javascripts/jquery.growl.js',
+							'jquery.growl/stylesheets/jquery.growl.css',
+							'jquery/dist/jquery.min.js',
+							'moment/min/moment.min.js'
+						], 
+						dest: 'dist/v<%=pkg.version%>'
+					}
 				]
 			}
 		},
@@ -84,7 +109,7 @@ module.exports = function (grunt) {
             minify: {
                 expand: true,
                 cwd: 'dist',
-                src: ["**/main.css"],
+                src: ["**/main.css", "**/jquery.growl.css"],
                 dest: 'dist'
             }
         },
@@ -105,7 +130,8 @@ module.exports = function (grunt) {
 				files: {
 					'dist/v<%=pkg.version%>/charting_library/datafeed/udf/datafeed.js' : 'dist/v<%=pkg.version%>/charting_library/datafeed/udf/datafeed.js',
 					'dist/v<%=pkg.version%>/common.js' : 'dist/v<%=pkg.version%>/common.js',
-					'dist/v<%=pkg.version%>/main.js' : 'dist/v<%=pkg.version%>/main.js'
+					'dist/v<%=pkg.version%>/main.js' : 'dist/v<%=pkg.version%>/main.js',
+					'dist/v<%=pkg.version%>/jquery.growl.js' : 'dist/v<%=pkg.version%>/jquery.growl.js'
 				},
                 options: {
                     mangle: true,
@@ -187,7 +213,7 @@ module.exports = function (grunt) {
 		}
 	});	
 
-	grunt.registerTask('core-tasks', ['clean:dist', 'copy:main', 'clean:todo', 'rename', 'replace', 'concat', 'clean:dist_udf']);
+	grunt.registerTask('core-tasks', ['clean:dist', 'copy:main', 'copy:copyLibraries', 'clean:todo', 'rename', 'replace', 'concat', 'clean:dist_udf']);
 	grunt.registerTask('default', ['core-tasks', 'removelogging', 'uglify', 'htmlmin', 'cssmin', 'firefoxManifest', 'replace:firefoxManifestVersion']);
 
 };
