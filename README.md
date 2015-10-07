@@ -29,3 +29,4 @@ It uses IntelXDK to generate Hybrid package for distribution in Apple and Google
 <strong>main.js</strong> - Our main JS file used in main.html
 
 <strong>mobile_assets</strong> - All mobile related image/icon files
+
