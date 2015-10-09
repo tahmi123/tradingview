@@ -1,5 +1,5 @@
 {
-  "name": "Binary.com_Tradingview_charts",
+  "name": "Binary.com_Charts",
   "version": "1.2.7",
   "description": "Tradingview charts implementation for Binary.com",
   "main": "Grunfile.js",
