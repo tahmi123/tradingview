@@ -4,7 +4,7 @@
     "128": "v1.2.7/browser_app_assets/binary-128x128px.png"
   },
   "launch_path": "/index.html",
-  "name": "Binary.com Tradingview charts",
+  "name": "Binary.com Charts",
   "description": "Tradingview charts implementation for Binary.com",
   "version": "1.2.7",
   "developer": {
