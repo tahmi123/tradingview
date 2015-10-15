@@ -105,7 +105,7 @@ $(document).ready(function() {
             });
           });
         })
-        .append($('<span>Save</span>'));
+        .append($('<img src="../../images/save.svg" width="20px" height="20px" style="margin-top : -3px;">'));
 
       //Copyright information
 	

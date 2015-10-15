@@ -6,12 +6,8 @@
 	.st0{fill:#838484;}
 </style>
 <g>
-	<g>
-		<path class="st0" d="M26,26H0V0h26V26z M2,24h22V2H2V24z"/>
-	</g>
-	<g>
-		<polygon class="st0" points="4.4,18 2.6,17.1 6.3,9.8 9.3,12.9 12.3,8 18.1,12.9 20.6,6.2 22.5,6.9 19,16.2 12.8,11 9.7,16.1 
-			6.8,13.2 		"/>
-	</g>
+	<path class="st0" d="M20,0h-2H4H0v26h4h18h4V7.2L20,0z M16,2v7H6V2H16z M6,24v-9h14v9H6z M24,24h-2V13H4v11H2V2h2v9h14V2h1.1
+		L24,7.9V24z"/>
+	<rect x="8" y="4" class="st0" width="2" height="3"/>
 </g>
 </svg>
