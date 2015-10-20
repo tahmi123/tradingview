@@ -6,19 +6,19 @@
     <meta http-equiv="Pragma" content="no-cache" />
     <meta http-equiv="Expires" content="0" />
     <link rel='shortcut icon' href='images/favicon.ico' type='image/x-icon'/ >
-    <!-- <META http-equiv="Refresh" content="0;URL=v1.0.0/main.html"> -->
+    <!-- <META http-equiv="Refresh" content="0;URL=v<version>/main.html"> -->
 
     <title>Highcharts implementation for Binary.com</title>
 
-    <script src="v1.0.0/common.js"></script>
+    <script src="v<version>/common.js"></script>
     <script charset="utf-8">
       var affiliates = getParameterByName('affiliates') || false;
       if (affiliates && affiliates == 'true') {
-        window.location.href = 'v1.0.0/main.html?'
+        window.location.href = 'v<version>/main.html?'
             + 'affiliates=true&instrument=' + getParameterByName('instrument')
             + '&timePeriod=' + getParameterByName('timePeriod');
       } else {
-        window.location.href = 'v1.0.0/main.html';
+        window.location.href = 'v<version>/main.html';
       }
     </script>
 </head>

@@ -10,8 +10,6 @@ It uses IntelXDK to generate Hybrid package for distribution in Apple and Google
 
 #Code/Folder details
 
-<strong>bower_components</strong> - We use bower to manager dependencies. This folder holds all the dependent libraries
-
 <strong>chart_library/datafeed</strong> - Our custom code to implement tradingview charting library
 
 <strong>common.js</strong> - All commong JS functions

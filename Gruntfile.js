@@ -67,6 +67,17 @@ module.exports = function (grunt) {
 						dest: 'dist/v<%=pkg.version%>'
 					}
 				]
+			},
+			copyChromeManifest: {
+				files: [
+					{
+						expand: true, 
+						flatten: true, 
+						cwd: '.', 
+						src: ["chrome_extension/*"],
+						dest: 'dist/'
+					}
+				]
 			}
 		},
 		rename: {
@@ -76,23 +87,18 @@ module.exports = function (grunt) {
 			}
 		},
 		replace: {
-			version: {
-				src: ['dist/index.html'],
-				overwrite: true,
-				replacements: [{
-					from: 'v1.0.0',
-					to: 'v<%=pkg.version%>'
-				}]
-			}, 
-			firefoxManifestVersion : {
-				src: ['dist/manifest.webapp'],
+			task: {
+				src: ['dist/index.html', 'dist/manifest.webapp', 'dist/manifest.json', 'dist/auto-update.xml'],
 				overwrite: true,
 				replacements: [{
 					from: '<version>',
-					to: 'v<%=pkg.version%>'
+					to: '<%=pkg.version%>'
 				}, {
-					from: '<%=pkg.name%>',
+					from: '<package-name>',
 					to: "<%=pkg.name.replace(/_/g, ' ')%>"
+				}, {
+					from: '<description>',
+					to: "<%=pkg.description%>"
 				}]
 			}
 		},
@@ -213,7 +219,7 @@ module.exports = function (grunt) {
 		}
 	});	
 
-	grunt.registerTask('core-tasks', ['clean:dist', 'copy:main', 'copy:copyLibraries', 'clean:todo', 'rename', 'replace', 'concat', 'clean:dist_udf']);
-	grunt.registerTask('default', ['core-tasks', 'removelogging', 'uglify', 'htmlmin', 'cssmin', 'firefoxManifest', 'replace:firefoxManifestVersion']);
+	grunt.registerTask('core-tasks', ['clean:dist', 'copy:main', 'copy:copyLibraries', 'clean:todo', 'rename', 'copy:copyChromeManifest', 'firefoxManifest', 'replace', 'concat', 'clean:dist_udf']);
+	grunt.registerTask('default', ['core-tasks', 'removelogging', 'uglify', 'htmlmin', 'cssmin']);
 
 };
