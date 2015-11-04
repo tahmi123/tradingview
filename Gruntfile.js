@@ -16,6 +16,8 @@ module.exports = function (grunt) {
 	grunt.loadNpmTasks('grunt-contrib-cssmin');
     grunt.loadNpmTasks('grunt-contrib-htmlmin');
     grunt.loadNpmTasks('grunt-firefox-manifest');
+    grunt.loadNpmTasks('grunt-firefox-manifest');
+    grunt.loadNpmTasks('grunt-contrib-jshint');
 
 	grunt.initConfig({
 	    pkg: grunt.file.readJSON('package.json'),
@@ -216,10 +218,16 @@ module.exports = function (grunt) {
 			  	manifest: 'dist/manifest.webapp'
 			},
 			target: {}
-		}
+		},
+		jshint: {
+	        options: {
+	            jshintrc: true
+	        },
+	        src: 'src/charting_library/datafeed/udf/*.js'
+	    }
 	});	
 
 	grunt.registerTask('core-tasks', ['clean:dist', 'copy:main', 'copy:copyLibraries', 'clean:todo', 'rename', 'copy:copyChromeManifest', 'firefoxManifest', 'replace', 'concat', 'clean:dist_udf']);
-	grunt.registerTask('default', ['core-tasks', 'removelogging', 'uglify', 'htmlmin', 'cssmin']);
+	grunt.registerTask('default', ['jshint', 'core-tasks', 'removelogging', 'uglify', 'htmlmin', 'cssmin']);
 
 };

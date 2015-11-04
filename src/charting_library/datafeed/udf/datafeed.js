@@ -10,6 +10,7 @@ Datafeeds = {};
 
 Datafeeds.UDFCompatibleDatafeed = function() {
 
+	"use strict";
 	this._configuration = undefined;
 
 	this._symbolSearch = null;
@@ -23,24 +24,26 @@ Datafeeds.UDFCompatibleDatafeed = function() {
 	this._feedHandler = new FeedHandler();
 	//Initialize supported_resolutions constant
 	this._supported_resolutions = [];
+	var that = this;
 	//For minutes
 	for (var index = 1; index <= 59; index++) {
 		this._supported_resolutions.push("" + index);
 	}
 	//For hours
-	for (var index = 1; index <= 23; index++) {
-		this._supported_resolutions.push("" + (index * 60));
+	for (var index1 = 1; index1 <= 23; index1++) {
+		this._supported_resolutions.push("" + (index1 * 60));
 	}
 	//For days
 	this._supported_resolutions.push('D');
-	for (var index = 2; index <= 3; index++) {
-		this._supported_resolutions.push(index + 'D');
+	for (var index2 = 2; index2 <= 3; index2++) {
+		this._supported_resolutions.push(index2 + 'D');
 	}
 
 	this._initialize();
 };
 
 Datafeeds.UDFCompatibleDatafeed.prototype.defaultConfiguration = function() {
+	"use strict";
 	return {
 		supports_search: true,
 		supports_group_request: false,
@@ -59,6 +62,7 @@ Datafeeds.UDFCompatibleDatafeed.prototype.defaultConfiguration = function() {
 
 Datafeeds.UDFCompatibleDatafeed.prototype.on = function (event, callback) {
 
+	"use strict";
 	if (!this._callbacks.hasOwnProperty(event)) {
 		this._callbacks[event] = [];
 	}
@@ -68,6 +72,7 @@ Datafeeds.UDFCompatibleDatafeed.prototype.on = function (event, callback) {
 };
 
 Datafeeds.UDFCompatibleDatafeed.prototype._fireEvent = function(event, argument) {
+	"use strict";
 	if (this._callbacks.hasOwnProperty(event)) {
 		var callbacksChain = this._callbacks[event];
 		for (var i = 0; i < callbacksChain.length; ++i) {
@@ -78,11 +83,13 @@ Datafeeds.UDFCompatibleDatafeed.prototype._fireEvent = function(event, argument)
 };
 
 Datafeeds.UDFCompatibleDatafeed.prototype.onInitialized = function() {
+	"use strict";
 	this._initializationFinished = true;
 	this._fireEvent("initialized");
 };
 
 Datafeeds.UDFCompatibleDatafeed.prototype._logMessage = function(message) {
+	"use strict";
 	if (this._enableLogging) {
 		var now = new Date();
 		console.log(now.toLocaleTimeString() + "." + now.getMilliseconds() + "> " + message);
@@ -90,6 +97,8 @@ Datafeeds.UDFCompatibleDatafeed.prototype._logMessage = function(message) {
 };
 
 Datafeeds.UDFCompatibleDatafeed.prototype._initialize = function() {
+
+	"use strict";
 
 	//Trigger market data load
 	this._feedHandler._symbolRequestResponseHandler.getSymbolTypeList();
@@ -99,18 +108,19 @@ Datafeeds.UDFCompatibleDatafeed.prototype._initialize = function() {
 		var configurationData = that.defaultConfiguration();
 		configurationData.symbolsTypes = [];
 		var tempSymbolTypeList = that._feedHandler._symbolRequestResponseHandler.getSymbolTypeList();
-		for (var eachSymbolTypeIndex in tempSymbolTypeList) {
+		tempSymbolTypeList.forEach(function(eachSymbolType) {
 			configurationData.symbolsTypes.push({
-				name : tempSymbolTypeList[eachSymbolTypeIndex],
-				value : tempSymbolTypeList[eachSymbolTypeIndex]
+				name : eachSymbolType,
+				value : eachSymbolType
 			});
-		}
+		});
 		that._setupWithConfiguration( configurationData );
 	});
 };
 
 Datafeeds.UDFCompatibleDatafeed.prototype.onReady = function(callback) {
 
+	"use strict";
 	if (this._configuration) {
 		callback(this._configuration);
 	}
@@ -123,6 +133,7 @@ Datafeeds.UDFCompatibleDatafeed.prototype.onReady = function(callback) {
 };
 
 Datafeeds.UDFCompatibleDatafeed.prototype._setupWithConfiguration = function(configurationData) {
+	"use strict";
 	this._configuration = configurationData;
 
 	if (!configurationData.exchanges) {
@@ -161,15 +172,16 @@ Datafeeds.UDFCompatibleDatafeed.prototype._setupWithConfiguration = function(con
 //	The functions set below is the implementation of JavaScript API.
 
 Datafeeds.UDFCompatibleDatafeed.prototype._symbolMetadata = function(symbolType) {
+	"use strict";
 	var ret = {};
 	if (symbolType) {
 		//TODO get this from the market data when the WS API is updated with this information
 		var pricescale = 10000, minmov = 1,
 					//This is forex market hours
 					session = '2200-2159:123456';
-		if (symbolType == 'Forex') {
+		if (symbolType === 'Forex') {
 			pricescale = 100000;
-		} else if (symbolType == 'Random') {
+		} else if (symbolType === 'Random') {
 			session = '24x7';
 		}
 		ret = {
@@ -182,6 +194,7 @@ Datafeeds.UDFCompatibleDatafeed.prototype._symbolMetadata = function(symbolType)
 };
 
 Datafeeds.UDFCompatibleDatafeed.prototype.searchSymbolsByName = function(ticker, exchange, type, onResultReadyCallback) {
+	"use strict";
 	var MAX_SEARCH_RESULTS = 30;
 
 	if (!this._configuration) {
@@ -193,14 +206,14 @@ Datafeeds.UDFCompatibleDatafeed.prototype.searchSymbolsByName = function(ticker,
 
 		var that = this;
 
-		function search(typedCharacter) {
+		var search = function(typedCharacter) {
 			var result = [];
 			$.each(that._feedHandler._symbolRequestResponseHandler._markets, function(key, val) {
 					$.each(val.submarkets, function(j, l) {
 						$.each(l.symbols, function(i, v) {
 
-							if (val.name.indexOf(type) != -1) {
-								if (v.symbol.indexOf(typedCharacter) != -1 || v.symbol_display.indexOf(typedCharacter) != -1) {
+							if (val.name.indexOf(type) !== -1) {
+								if (v.symbol.indexOf(typedCharacter) !== -1 || v.symbol_display.indexOf(typedCharacter) !== -1) {
 									result.push({
 										"symbol": v.symbol,
 										"description": v.symbol_display,
@@ -228,6 +241,7 @@ Datafeeds.UDFCompatibleDatafeed.prototype.searchSymbolsByName = function(ticker,
 //	BEWARE: this function does not consider symbol's exchange
 Datafeeds.UDFCompatibleDatafeed.prototype.resolveSymbol = function(symbolName, onSymbolResolvedCallback, onResolveErrorCallback) {
 
+	"use strict";
 	var that = this;
 
 	if (!this._initializationFinished) {
@@ -253,7 +267,7 @@ Datafeeds.UDFCompatibleDatafeed.prototype.resolveSymbol = function(symbolName, o
 				$.each(val.submarkets, function(j, l) {
 					$.each(l.symbols, function(i, v) {
 
-						if (v.symbol.indexOf(symbolName) != -1) {
+						if (v.symbol.indexOf(symbolName) !== -1) {
 
 							var symbolMetadata = that._symbolMetadata(val.name),
 									pricescale = symbolMetadata.pricescale,
@@ -303,6 +317,7 @@ Datafeeds.UDFCompatibleDatafeed.prototype.resolveSymbol = function(symbolName, o
 
 
 Datafeeds.UDFCompatibleDatafeed.prototype.getBars = function(symbolInfo, resolution, rangeStartDate, rangeEndDate, onDataCallback, onErrorCallback) {
+	"use strict";
 	//The resolution parameter is a useless parameter because it does not contain the actual resolution of the chart
 	try {
 		$(document).trigger("chart-status-picture-change", ["loading"]);
@@ -314,28 +329,35 @@ Datafeeds.UDFCompatibleDatafeed.prototype.getBars = function(symbolInfo, resolut
 };
 
 Datafeeds.UDFCompatibleDatafeed.prototype.subscribeBars = function(symbolInfo, resolution, onRealtimeCallback, listenerGUID) {
+	"use strict";
 	this._feedHandler._tickDataRequestResponseHandler.subscribeBars(symbolInfo, onRealtimeCallback, listenerGUID);
 };
 
 Datafeeds.UDFCompatibleDatafeed.prototype.unsubscribeBars = function(listenerGUID) {
+	"use strict";
 	this._feedHandler._tickDataRequestResponseHandler.unsubscribeBars(listenerGUID);
 };
 
 // Unsed methods - start
 Datafeeds.UDFCompatibleDatafeed.prototype.getMarks = function (symbolInfo, rangeStart, rangeEnd, onDataCallback, resolution) {
+	"use strict";
 };
 
 Datafeeds.UDFCompatibleDatafeed.prototype.calculateHistoryDepth = function(resolution, resolutionBack, intervalBack) {
+	"use strict";
 };
 
 Datafeeds.UDFCompatibleDatafeed.prototype.getQuotes = function(symbols, onDataCallback, onErrorCallback) {
+	"use strict";
 	console.log('[DEBUG] This should not be called at all!');
 };
 
 Datafeeds.UDFCompatibleDatafeed.prototype.subscribeQuotes = function(symbols, fastSymbols, onRealtimeCallback, listenerGUID) {
+	"use strict";
 };
 
 Datafeeds.UDFCompatibleDatafeed.prototype.unsubscribeQuotes = function(listenerGUID) {
+	"use strict";
 };
 //Unsed methods - end
 
@@ -349,6 +371,7 @@ Datafeeds.UDFCompatibleDatafeed.prototype.unsubscribeQuotes = function(listenerG
 	  * do symbol resolving -- return symbol info by its name
 */
 Datafeeds.SymbolsStorage = function(datafeed) {
+	"use strict";
 	this._datafeed = datafeed;
 
 	this._symbolsInfo = {};
@@ -359,6 +382,7 @@ Datafeeds.SymbolsStorage = function(datafeed) {
 
 Datafeeds.SymbolsStorage.prototype._requestFullSymbolsList = function() {
 
+	"use strict";
 	var that = this;
 	var datafeed = this._datafeed;
 
@@ -417,6 +441,7 @@ Datafeeds.SymbolsStorage.prototype._requestFullSymbolsList = function() {
 //	BEWARE: this function does not consider symbol's exchange
 Datafeeds.SymbolsStorage.prototype.resolveSymbol = function(symbolName, onSymbolResolvedCallback, onResolveErrorCallback) {
 
+	"use strict";
 	if (!this._symbolsInfo.hasOwnProperty(symbolName)) {
 		onResolveErrorCallback("invalid symbol");
 	}
@@ -438,12 +463,14 @@ Datafeeds.SymbolsStorage.prototype.resolveSymbol = function(symbolName, onSymbol
 */
 
 Datafeeds.SymbolSearchComponent = function(datafeed) {
+	"use strict";
 	this._datafeed = datafeed;
 };
 
 //	searchArgument = { ticker, onResultReadyCallback}
 Datafeeds.SymbolSearchComponent.prototype.searchSymbolsByName = function(searchArgument, maxSearchResults) {
 
+	"use strict";
 	if (!this._datafeed._symbolsStorage) {
 		throw "Cannot use local symbol search when no groups information is available";
 	}
@@ -457,7 +484,7 @@ Datafeeds.SymbolSearchComponent.prototype.searchSymbolsByName = function(searchA
 		var symbolName = symbolsStorage._symbolsList[i];
 		var item = symbolsStorage._symbolsInfo[symbolName];
 
-		if (searchArgument.type && searchArgument.type.length > 0 && item.type != searchArgument.type) {
+		if (searchArgument.type && searchArgument.type.length > 0 && item.type !== searchArgument.type) {
 			continue;
 		}
 		// if (searchArgument.exchange && searchArgument.exchange.length > 0 && item.exchange != searchArgument.exchange) {
@@ -482,4 +509,4 @@ Datafeeds.SymbolSearchComponent.prototype.searchSymbolsByName = function(searchA
 	}
 
 	searchArgument.onResultReadyCallback(results);
-}
+};

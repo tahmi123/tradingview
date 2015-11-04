@@ -1,6 +1,6 @@
 {
   "name": "Binary.com_Charts_(TradingView)",
-  "version": "1.2.9",
+  "version": "1.2.10",
   "description": "Tradingview charts implementation for Binary.com",
   "main": "Grunfile.js",
   "scripts": {
@@ -34,7 +34,8 @@
     "grunt-gh-pages": "^0.10.0",
     "grunt-remove-logging": "ehynds/grunt-remove-logging",
     "grunt-rename": "^0.1.4",
-    "grunt-text-replace": "^0.4.0"
+    "grunt-text-replace": "^0.4.0",
+    "grunt-contrib-jshint": "^0.11.3"
   },
   "dependencies": {
     "ReconnectingWebSocket": "joewalnes/reconnecting-websocket",

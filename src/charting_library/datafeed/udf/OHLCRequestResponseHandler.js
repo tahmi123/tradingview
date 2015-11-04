@@ -1,5 +1,7 @@
 OHLCRequestResponseHandler = function(feedHandler) {
 
+  "use strict";
+
   this.feedHandler = feedHandler;
   this._barsKeyTable = {};
   this._barsTable = {};
@@ -8,6 +10,8 @@ OHLCRequestResponseHandler = function(feedHandler) {
 };
 
 OHLCRequestResponseHandler.prototype.init = function() {
+
+  "use strict";
 
   this._barsKeyTable = this.feedHandler._db.getCollection('bars_key_table');
   this._barsTable = this.feedHandler._db.getCollection('bars_table');
@@ -43,8 +47,7 @@ OHLCRequestResponseHandler.prototype.init = function() {
         onErrorCallback = tableRow.onErrorCallback_chart,
         onDataCallback = tableRow.onDataCallback_chart,
         bars = [];
-    for (var index in db_Bars) {
-      var eachBar = db_Bars[index];
+    db_Bars.forEach(function(eachBar) {
       bars.push({
         time : eachBar.time,
         open : eachBar.open,
@@ -53,7 +56,7 @@ OHLCRequestResponseHandler.prototype.init = function() {
         close : eachBar.close
       });
       eachBar.rendered = true;
-    }
+    });
 
     if (db_Bars && db_Bars.length > 0) {
       //don't mark the last bar rendered = true. because it is always changing
@@ -63,7 +66,7 @@ OHLCRequestResponseHandler.prototype.init = function() {
     //console.log('Rendering bars', bars);
     console.log('Bars length', bars.length);
 
-    if (bars.length == 0 && onErrorCallback)
+    if (bars.length === 0 && onErrorCallback)
     {
       console.log('Calling TV onErrorCallback');
       onErrorCallback("no data");
@@ -72,9 +75,9 @@ OHLCRequestResponseHandler.prototype.init = function() {
       console.log('Caling TV onDataCallback');
       //if onErrorCallback is undefined/NULL, that means it was on new Bar subscriber call
       if (!onErrorCallback) {
-        for (var index in bars) {
-          onDataCallback(bars[index]);
-        }
+        bars.forEach(function (bar) {
+          onDataCallback(bar);
+        });
       } else {
         onDataCallback(bars);
       }
@@ -84,8 +87,11 @@ OHLCRequestResponseHandler.prototype.init = function() {
 };
 
 OHLCRequestResponseHandler.prototype.parseSuffixAndIntValue = function() {
+
+  "use strict";
+
   var intValInString = TradingView.actualResolution.toUpperCase().replace('D', '').replace('M', '').replace('W', '');
-  var intVal = intValInString == '' ? 1 : parseInt(intValInString);
+  var intVal = intValInString === '' ? 1 : parseInt(intValInString);
   var suffix = TradingView.actualResolution.replace('' + intVal, '');
   //console.log('Suffix : ', suffix, " TradingView.actualResolution : ", TradingView.actualResolution);
   switch(suffix) {
@@ -113,6 +119,9 @@ OHLCRequestResponseHandler.prototype.parseSuffixAndIntValue = function() {
 };
 
 OHLCRequestResponseHandler.prototype.totalSecondsInABar = function(suffix, intVal) {
+
+  "use strict";
+
   var totalSecondsInABar = 0;
   switch(suffix) {
     case 'M':
@@ -130,6 +139,8 @@ OHLCRequestResponseHandler.prototype.totalSecondsInABar = function(suffix, intVa
 
 OHLCRequestResponseHandler.prototype.getBars = function(symbolInfo, rangeStartDate, rangeEndDate, onDataCallback, onErrorCallback, ignoreEndDate) {
 
+  "use strict";
+
 	var that = this;
 
 	//	timestamp sample: 1399939200
@@ -139,7 +150,7 @@ OHLCRequestResponseHandler.prototype.getBars = function(symbolInfo, rangeStartDa
 
   var tableRow = this._barsKeyTable.findObject({'key' : symbolInfo.ticker + TradingView.actualResolution}) || {},
       tableID = tableRow.barsKeyTableID || -1;
-  if (tableID == -1) {
+  if (tableID === -1) {
     tableID = new Date().getTime();
     this._barsKeyTable.insert({
       barsKeyTableID : tableID,
@@ -192,7 +203,7 @@ OHLCRequestResponseHandler.prototype.getBars = function(symbolInfo, rangeStartDa
                 'Total Seconds in a bar : ', totalSecondsInABar,
                 'Ignore End Date : ', ignoreEndDate);
   var requestObject = {
-    "ticks": symbolInfo.ticker,
+    "ticks_history": symbolInfo.ticker,
     "start": Math.floor(rangeStartDate),
     "end": ignoreEndDate || !dataExists ? 'latest' : Math.ceil(rangeEndDate), 
     //"count": count,
@@ -206,27 +217,30 @@ OHLCRequestResponseHandler.prototype.getBars = function(symbolInfo, rangeStartDa
 
 OHLCRequestResponseHandler.prototype.process = function( data ) {
 
+  "use strict";
+
   if (!data.candles) return;
   console.log('Response number of bars (from WS API): ', data.candles.length);
 
   //Candles are returned with time in desc order
   var barsFromResponse = data.candles;
 
-  var tableRow = this._barsKeyTable.findObject({'key' : data.echo_req.ticks + TradingView.actualResolution}) || {},
+  var tableRow = this._barsKeyTable.findObject({'key' : data.echo_req.ticks_history + TradingView.actualResolution}) || {},
       tableID = tableRow.barsKeyTableID || -1;
 
-  for ( var index in barsFromResponse )
+  var that = this;
+
+  barsFromResponse.forEach(function(eachData)
   {
-      var eachData = barsFromResponse[index];
       var time 	= parseInt(eachData.epoch) * 1000;
   		var open 	= parseFloat(eachData.open);
       var high 	= parseFloat(eachData.high);
       var low 	= parseFloat(eachData.low);
       var close = parseFloat(eachData.close);
 
-      var bars = this._barsTable.chain().find({'barsKeyTableID' : tableID}).find({'time' : time}).limit(1).data();
+      var bars = that._barsTable.chain().find({'barsKeyTableID' : tableID}).find({'time' : time}).limit(1).data();
       if(bars.length <= 0) {
-        this._barsTable.insert({
+        that._barsTable.insert({
           barsKeyTableID : tableID,
           time  : time,
   				open  : open,
@@ -240,10 +254,10 @@ OHLCRequestResponseHandler.prototype.process = function( data ) {
         bars[0].high  = high;
         bars[0].low   = low ;
         bars[0].close = close;
-        this._barsTable.update(bars);
+        that._barsTable.update(bars);
       }
 
-  }
+  });
 
   this.renderBars( tableID );
 
@@ -252,11 +266,14 @@ OHLCRequestResponseHandler.prototype.process = function( data ) {
 };
 
 OHLCRequestResponseHandler.prototype.resetTableData = function(symbolInfo) {
+
+  "use strict";
+  
   var tableRow = this._barsKeyTable.findObject({'key' : symbolInfo.ticker + TradingView.actualResolution}) || {},
       tableID = tableRow.barsKeyTableID || -1,
       bars = this._barsTable.chain().find({'barsKeyTableID' : tableID}).data() || [];
-  for (var index in bars) {
-    bars[index].rendered = false;
-  }
+  bars.forEach(function(bar) {
+    bar.rendered = false;
+  });
   this._barsTable.update(bars);
 };

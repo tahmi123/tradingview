@@ -1,5 +1,7 @@
 TickDataRequestResponseHandler = function(feedHandler) {
 
+  "use strict";
+
   this.feedHandler = feedHandler;
   this._barsKeyTable = {};
   this._barsTable = {};
@@ -10,6 +12,7 @@ TickDataRequestResponseHandler = function(feedHandler) {
 
 TickDataRequestResponseHandler.prototype.init = function() {
 
+  "use strict";
   this._barsKeyTable = this.feedHandler._db.getCollection('bars_key_table');
   this._barsTable = this.feedHandler._db.getCollection('bars_table');
 
@@ -17,6 +20,7 @@ TickDataRequestResponseHandler.prototype.init = function() {
 
 TickDataRequestResponseHandler.prototype.process = function( data ) {
 
+  "use strict";
   var tableRow = this._barsKeyTable.findObject({key : data.echo_req.ticks + TradingView.actualResolution});
   if (!tableRow) return;
 
@@ -51,6 +55,7 @@ TickDataRequestResponseHandler.prototype.process = function( data ) {
 
 TickDataRequestResponseHandler.prototype.subscribeBars = function(symbolInfo, onRealtimeCallback, listenerGUID) {
 
+  "use strict";
   //console.log(listenerGUID);
   var tableRow = this._barsKeyTable.findObject({key : symbolInfo.ticker + TradingView.actualResolution});
   if (!tableRow) return;
@@ -93,7 +98,7 @@ TickDataRequestResponseHandler.prototype.subscribeBars = function(symbolInfo, on
         //requests new bars
         that.feedHandler._ohlcRequestResponseHandler.getBars(symbolInfo, lastBar.time/1000, moment().utc().valueOf() / 1000 + totalSecondsInABar, onRealtimeCallback, null, true);
       }
-    };
+    }
 
     //From now onwards we can have one interval timer to update new bars
     tableRow.timerHandler = setInterval(function() {
@@ -111,6 +116,7 @@ TickDataRequestResponseHandler.prototype.subscribeBars = function(symbolInfo, on
 
 TickDataRequestResponseHandler.prototype.unsubscribeBars = function(listenerGUID) {
 
+  "use strict";
   var tableRow = this._barsKeyTable.findObject({listenerGUID : listenerGUID});
   if (!tableRow) return;
 
@@ -146,9 +152,10 @@ TickDataRequestResponseHandler.prototype.unsubscribeBars = function(listenerGUID
 
 TickDataRequestResponseHandler.prototype.reSubscribeToTicks = function() {
 
+  "use strict";
   var tableRows = this._barsKeyTable.findObjects({});
   if (tableRows) {
-    for (var tableRowIndex in tableRows) {
+    for (var tableRowIndex = 0; tableRowIndex < tableRows.length; tableRowIndex++) {
       var tableRow = tableRows[tableRowIndex];
       if (tableRow) {
         var ticker = tableRow.key.replace(TradingView.actualResolution, "").trim();

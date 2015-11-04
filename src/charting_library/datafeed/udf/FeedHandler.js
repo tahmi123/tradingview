@@ -1,5 +1,7 @@
 function FeedHandler(feedHandler) {
 
+  "use strict";
+
   //Initialize all variables here
   this._webSocketConnection = null;
   this._symbolRequestResponseHandler = null;
@@ -11,9 +13,11 @@ function FeedHandler(feedHandler) {
 
   this.init();
 
-};
+}
 
 FeedHandler.prototype.close = function() {
+
+  "use strict";
 
   if (this._webSocketConnection) {
     this._webSocketConnection.close();
@@ -23,7 +27,9 @@ FeedHandler.prototype.close = function() {
 
 FeedHandler.prototype.init = function() {
 
-  this._webSocketConnection = new ReconnectingWebSocket("wss://www.binary.com/websockets/v2");
+  "use strict";
+  
+  this._webSocketConnection = new ReconnectingWebSocket("wss://www.binary.com/websockets/v3");
 
   this._db = new loki();
   /*
@@ -94,12 +100,12 @@ FeedHandler.prototype.init = function() {
         } else {
           if (data.echo_req.passthrough && data.echo_req.passthrough.tradingview_ticker_id) {
             var tradingview_ticker_id = TradingView.currentlyDisplayedSymbol + TradingView.actualResolution;
-            if (tradingview_ticker_id == data.echo_req.passthrough.tradingview_ticker_id) {
+            if (tradingview_ticker_id === data.echo_req.passthrough.tradingview_ticker_id) {
               that._lastTickTime = Date.now();
               $(document).trigger("chart-status-picture-change", ["realtime-feed"]);
               that._tickDataRequestResponseHandler.process( data );
             } else {
-              that._webSocketConnection.send(JSON.stringify({"forget" : data.tick.id}))
+              that._webSocketConnection.send(JSON.stringify({"forget" : data.tick.id}));
             }
           }
         }
