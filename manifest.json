@@ -1,18 +1,18 @@
 {
   "name": "Binary.com Charts (TradingView)",
-  "version": "1.2.9",
+  "version": "1.2.10",
   "manifest_version": 2,
   "description": "Tradingview charts implementation for Binary.com",
   "homepage_url": "https://www.binary.com",
   "icons": {
-    "16": "v1.2.9/browser_app_assets/binary-16x16px.png",
-    "128": "v1.2.9/browser_app_assets/binary-128x128px.png"
+    "16": "v1.2.10/browser_app_assets/binary-16x16px.png",
+    "128": "v1.2.10/browser_app_assets/binary-128x128px.png"
   },
   "background":{
     "scripts": ["chrome_background.js"]
   },
   "browser_action": {
-    "default_icon": "v1.2.9/browser_app_assets/binary-16x16px.png",
+    "default_icon": "v1.2.10/browser_app_assets/binary-16x16px.png",
     "default_title": "Tradingview charts implementation for Binary.com"
   },
   "permissions": [
