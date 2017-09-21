@@ -1,5 +1,6 @@
 #Tradingview Implementation for Binary.com ![Build Status](https://travis-ci.org/binary-com/tradingview.svg?branch=master)
 
+<<<<<<< HEAD
 [![Join the chat at https://gitter.im/binary-com/tradingview](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/binary-com/tradingview?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 
 This repository contains HTML, Javascript, CSS, and images content of the [Tradingview implementation for binary.com charts](http://binary-com.github.io/tradingview).
@@ -28,3 +29,7 @@ It uses IntelXDK to generate Hybrid package for distribution in Apple and Google
 
 <strong>mobile_assets</strong> - All mobile related image/icon files
 
+=======
+This is our production deployment static hosting. We serve pages directly from gh-pages. It has been mapped to  tradingview.binary.com
+
+>>>>>>> origin/gh-pages
